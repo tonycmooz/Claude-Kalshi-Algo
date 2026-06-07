@@ -55,6 +55,7 @@ def _row(s: MarketSnapshot) -> dict[str, float]:
         "momentum_recent": momentum_recent,
         "volatility": volatility,
         "price_vs_hist_mean": price - float(np.mean(hist)),
+        "news_sentiment": float(s.extra.get("news_sentiment", 0.0)),
         "category": s.category,
     }
 
@@ -72,6 +73,10 @@ class FeatureBuilder:
         cats = sorted({s.category for s in snapshots})
         self.categories_ = cats
         num_cols = [f for f in NUMERIC_FEATURES if f in self.requested]
+        # Include the optional news-sentiment feature only when a provider has
+        # actually attached it - keeps the offline pipeline byte-for-byte stable.
+        if any("news_sentiment" in (s.extra or {}) for s in snapshots):
+            num_cols.append("news_sentiment")
         self.columns_ = num_cols + [f"cat_{c}" for c in cats]
         return self
 

@@ -7,4 +7,8 @@ venv/
 *.egg-info/
 loop_run.log
 *.parquet
+*.db
+*.sqlite
+.env
+/data/
 .DS_Store

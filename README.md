@@ -144,22 +144,59 @@ client = KalshiClient(auth=auth, paper=False)   # paper=False == real money
 
 ---
 
+## Continuous deployment on Railway
+
+The strategy can run as an **always-on cloud worker** that connects to the live
+Kalshi API, **keeps learning and iterating on its own**, and persists everything
+so it survives redeploys. One process loops forever:
+
+```
+collect live markets → persist → settle resolved trades → (every N cycles)
+retrain a challenger & promote it iff it beats the champion → trade (paper/live)
+```
+
+- **`kalshi_algo/service/worker.py`** — the entrypoint (health endpoint + loop).
+- **`kalshi_algo/service/loop_service.py`** — the collect → reconcile → learn →
+  trade cycle with risk caps and a daily-loss kill-switch.
+- **`kalshi_algo/store/`** — Postgres (prod) / SQLite (local) persistence +
+  model registry (champion/challenger).
+- **`kalshi_algo/data/feeds.py`** — swappable live (`KalshiFeed`) vs offline
+  (`SimulatedFeed`) sources, so the identical loop is testable offline.
+- **`kalshi_algo/data/news.py`** — optional news/sentiment features.
+
+Trading is **paper by default**; real orders require `LIVE_TRADING=1`, Kalshi
+credentials, and pass hard risk caps. Full instructions (Postgres plugin,
+volume, env vars, going live) are in **[DEPLOYMENT.md](DEPLOYMENT.md)**.
+
+Try the whole loop locally with no credentials (replays the simulator as if it
+were live):
+
+```bash
+DATA_SOURCE=sim DATABASE_URL=sqlite:////tmp/dev.db MODEL_DIR=/tmp/models \
+  MIN_LABELS_TO_TRAIN=500 CYCLE_SECONDS=0 python -m kalshi_algo.service.worker
+# then GET http://localhost:8080/  for live status JSON
+```
+
 ## Repository layout
 
 ```
 kalshi_algo/
   config.py            tunable StrategyConfig + PerformanceTargets + fee constants
-  data/                KalshiClient (live REST) + MarketSimulator + MarketSnapshot
+  runtime_config.py    env-driven RuntimeConfig + RiskCaps (the deploy surface)
+  data/                KalshiClient (live REST), MarketSimulator, feeds, news
   features/            leakage-free feature engineering
   models/              calibrated gradient-boosted fair-value predictor
   strategy/            edge → fractional-Kelly sizing under risk limits
   backtest/            event-driven engine, metrics, walk-forward validation
   learning/            the self-improving optimization loop
   live/                paper/live trader with continual learning
+  store/               Postgres/SQLite persistence + model registry
+  service/             Railway worker: health endpoint + collect/learn/trade loop
   reporting.py         artifact + markdown report writers
   cli.py               command-line interface
 run_learning_loop.py   end-to-end driver (loop → held-out test → report)
-tests/                 pytest suite (edge-is-real, no-leakage, fees, e2e, …)
+Dockerfile, railway.toml, Procfile, .env.example, DEPLOYMENT.md   deployment
+tests/                 pytest suite (edge-is-real, no-leakage, fees, loop, e2e)
 ```
 
 ## Risk note

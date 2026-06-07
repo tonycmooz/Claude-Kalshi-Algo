@@ -7,7 +7,7 @@ exclusively for training / backtesting (never as a live input feature).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 
@@ -29,6 +29,9 @@ class MarketSnapshot:
     price_history: tuple[float, ...] = ()
     # Outcome (None until the market resolves) -------------------------------
     result: Optional[int] = None   # 1 if YES resolved true, 0 otherwise
+    # Optional external signals (e.g. news sentiment) keyed by feature name.
+    # Populated by data providers; consumed opportunistically by features.
+    extra: dict = field(default_factory=dict)
 
     @property
     def mid(self) -> float:
