@@ -1,0 +1,41 @@
+{
+  "targets_met": true,
+  "validation": {
+    "n_trades": 1507,
+    "roi": 0.08150359886573243,
+    "total_return": 1.7654170907087852,
+    "sharpe": 4.594488814012534,
+    "sortino": 425.7882030190534,
+    "hit_rate": 0.5859323158593231,
+    "profit_factor": 1.196083284913977,
+    "max_drawdown": 0.16219586941643754,
+    "brier": 0.18972295373987602,
+    "final_equity": 27654.17090708785
+  },
+  "validation_stability": {
+    "n_folds": 4,
+    "worst_fold_sharpe": 2.7332033979103136,
+    "worst_fold_roi": 0.024993086908374644,
+    "frac_profitable_folds": 1.0,
+    "sharpe_std": 4.209997489287781
+  },
+  "test": {
+    "n_trades": 1782,
+    "roi": 0.1273966271281154,
+    "total_return": 7.4325254273505585,
+    "sharpe": 10.480504904597804,
+    "sortino": 854.4095798336448,
+    "hit_rate": 0.6952861952861953,
+    "profit_factor": 1.423836095928742,
+    "max_drawdown": 0.1281594793690874,
+    "brier": 0.1818505179723026,
+    "final_equity": 84325.25427350559
+  },
+  "test_stability": {
+    "n_folds": 4,
+    "worst_fold_sharpe": 9.28857405441681,
+    "worst_fold_roi": 0.11430151663528339,
+    "frac_profitable_folds": 1.0,
+    "sharpe_std": 2.072045707240463
+  }
+}

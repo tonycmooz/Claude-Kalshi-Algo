@@ -1,0 +1,21 @@
+{
+  "model": {
+    "n_estimators": 300,
+    "learning_rate": 0.02422012878922756,
+    "max_depth": 4,
+    "min_samples_leaf": 40,
+    "subsample": 0.766758416253241,
+    "max_features": 0.7268080609266383,
+    "calibration": "sigmoid",
+    "random_state": 7
+  },
+  "edge_threshold": 0.09492616906106284,
+  "kelly_fraction": 0.08657879609598708,
+  "max_position_frac": 0.009697255269613448,
+  "min_price": 0.07693573318381501,
+  "max_price": 0.9662633092346384,
+  "min_volume": 50.0,
+  "max_spread": 0.07614054377218757,
+  "allow_short_no": true,
+  "feature_set": []
+}
